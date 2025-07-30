@@ -1,0 +1,60 @@
+-- Table: customer
+CREATE TABLE customer (
+    customer_id VARCHAR(50) PRIMARY KEY,
+    customer_name VARCHAR(100),
+    customer_email VARCHAR(100),
+    customer_since DATE,
+    customer_card_number VARCHAR(50),
+    birthdate DATE,
+    gender CHAR(1)
+);
+
+-- Table: product
+CREATE TABLE product (
+    product_id INT PRIMARY KEY,
+    product_category VARCHAR(50),
+    product_type VARCHAR(50),
+    product_name VARCHAR(100),
+    description TEXT,
+    price NUMERIC(10, 2)
+);
+
+-- Table: staff
+CREATE TABLE staff (
+    staff_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    position VARCHAR(50),
+    start_date DATE,
+    location VARCHAR(50)
+);
+
+-- Table: sales_outlet
+CREATE TABLE sales_outlet (
+    sales_outlet_id INT PRIMARY KEY,
+    sales_outlet_type VARCHAR(50),
+    address VARCHAR(255),
+    city VARCHAR(100),
+    telephone VARCHAR(20),
+    postal_code VARCHAR(10),
+    manager INT, -- This would be a foreign key to staff_id if managers are always staff
+    FOREIGN KEY (manager) REFERENCES staff(staff_id)
+);
+
+-- Table: sales_transaction
+CREATE TABLE sales_transaction (
+    transaction_id INT PRIMARY KEY,
+    transaction_date DATE,
+    transaction_time TIME,
+    sales_outlet_id INT NOT NULL,
+    staff_id INT NOT NULL,
+    customer_id VARCHAR(50), -- Assuming customer_id can be 0 for walk-ins (as per your data example)
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price NUMERIC(10, 2) NOT NULL, -- This 'price' seems to be the price for THIS line item, not the unit price of the product
+
+    FOREIGN KEY (sales_outlet_id) REFERENCES sales_outlet(sales_outlet_id),
+    FOREIGN KEY (staff_id) REFERENCES staff(staff_id),
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id), -- This will need to handle NULL or '0' if customer isn't always recorded
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
